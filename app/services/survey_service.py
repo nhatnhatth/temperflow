@@ -6,18 +6,38 @@ from app.models.survey_session import SurveySession
 def get_all_questions(db: Session):
     return db.query(SurveyQuestion).all()
 
+# def save_survey(db: Session, user_id: int, answers: list):
+#     session = SurveySession(user_id=user_id)
+#     db.add(session)
+#     db.commit()
+#     db.refresh(session)
+
+#     for ans in answers:
+#         survey_answer = SurveyAnswer(
+#             session_id=session.id,
+#             question_id=ans["question_id"],
+#             answer=ans["answer"]
+#         )
+#         db.add(survey_answer)
+#     db.commit()
+#     return session
+
 def save_survey(db: Session, user_id: int, answers: list):
+    print("📋 Received survey answers:", answers)  # ✅ In ra console
+    
     session = SurveySession(user_id=user_id)
     db.add(session)
     db.commit()
     db.refresh(session)
 
     for ans in answers:
+        print("🧩 Answer item:", ans)  # ✅ In từng phần tử nếu muốn
         survey_answer = SurveyAnswer(
             session_id=session.id,
             question_id=ans["question_id"],
             answer=ans["answer"]
         )
         db.add(survey_answer)
+
     db.commit()
     return session

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import Swal from "sweetalert2"; // ✅ import thư viện
 
 const TaskCard = ({ task, onStart, onComplete }) => {
   const [started, setStarted] = useState(false);
@@ -8,31 +9,75 @@ const TaskCard = ({ task, onStart, onComplete }) => {
 
   // Bắt đầu task
   const handleStart = () => {
-    setStarted(true);
-    onStart(task);
+    Swal.fire({
+      title: "Bắt đầu nhiệm vụ?",
+      text: `Bạn sắp bắt đầu: "${task.title}" (${task.duration} phút)`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Bắt đầu ngay 💪",
+      cancelButtonText: "Để sau",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setStarted(true);
+        onStart(task);
 
-    timerRef.current = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timerRef.current);
-          setCompleted(true);
-          onComplete && onComplete(task.id);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+        Swal.fire({
+          title: "Đang thực hiện...",
+          text: "Chúc bạn hoàn thành thật tốt nhé!",
+          icon: "info",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+
+        timerRef.current = setInterval(() => {
+          setTimeLeft((prev) => {
+            if (prev <= 1) {
+              clearInterval(timerRef.current);
+              setCompleted(true);
+              onComplete && onComplete(task.id);
+              Swal.fire({
+                icon: "success",
+                title: "Hoàn thành nhiệm vụ ✅",
+                text: `"${task.title}" đã hoàn tất!`,
+                timer: 2000,
+                showConfirmButton: false,
+              });
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      }
+    });
   };
 
-  // Kết thúc task sớm
+  // Kết thúc sớm
   const handleEndEarly = () => {
-    clearInterval(timerRef.current);
-    onComplete && onComplete(task.id);
-    setCompleted(true);
-    setTimeLeft(0);
+    Swal.fire({
+      title: "Kết thúc sớm?",
+      text: "Bạn có chắc muốn dừng nhiệm vụ này không?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Có, kết thúc luôn 😅",
+      cancelButtonText: "Tiếp tục làm",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        clearInterval(timerRef.current);
+        onComplete && onComplete(task.id);
+        setCompleted(true);
+        setTimeLeft(0);
+        Swal.fire({
+          icon: "info",
+          title: "Đã kết thúc sớm",
+          text: `"${task.title}" đã được đánh dấu hoàn thành.`,
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      }
+    });
   };
 
-  // Hiển thị thời gian dạng mm:ss
+  // Hiển thị thời gian mm:ss
   const formatTime = (seconds) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
@@ -44,7 +89,8 @@ const TaskCard = ({ task, onStart, onComplete }) => {
       <h3 style={styles.title}>{task.title}</h3>
       <p style={styles.description}>{task.description}</p>
       <p style={styles.meta}>
-        <strong>Thời gian:</strong> {task.duration} phút | <strong>Loại:</strong> {task.type}
+        <strong>Thời gian:</strong> {task.duration} phút |{" "}
+        <strong>Loại:</strong> {task.type}
       </p>
 
       {!started && !completed && (
@@ -65,7 +111,17 @@ const TaskCard = ({ task, onStart, onComplete }) => {
       )}
 
       {completed && (
-        <button style={styles.completeButton} onClick={() => alert("Task hoàn thành ✅")}>
+        <button
+          style={styles.completeButton}
+          onClick={() =>
+            Swal.fire({
+              icon: "success",
+              title: "Task hoàn thành 🎉",
+              text: `"${task.title}" đã được đánh dấu hoàn thành!`,
+              confirmButtonText: "OK",
+            })
+          }
+        >
           Hoàn thành
         </button>
       )}
