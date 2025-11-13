@@ -3,12 +3,12 @@ from typing import List, Optional
 
 class RecommendationTask(BaseModel):
     title: str
-    duration: int          # phút
+    duration: int        
     description: str
-    type: str             # ví dụ: "vận động", "thư giãn", "nhận thức"
+    type: str
 
 class RecommendationInput(BaseModel):
-    anger_level: int       # 1–10
-    free_time: int         # phút
+    anger_level: int
+    free_time: int      
     location: Optional[str] = None
     emotions: Optional[List[str]] = []

@@ -1,7 +1,10 @@
 import random
 from app.schemas.recommendation_schema import RecommendationTask, RecommendationInput
 
-# 🧩 Danh sách 20 hành động mẫu
+import logging
+
+logger = logging.getLogger("uvicorn")
+
 TASKS = [
     {"title": "Thở sâu", "duration": 1, "description": "Hít thở sâu 1 phút", "type": "thư giãn"},
     {"title": "Uống nước", "duration": 1, "description": "Uống một cốc nước để làm dịu cơ thể", "type": "nhận thức"},
@@ -26,8 +29,7 @@ TASKS = [
 ]
 
 def recommend_tasks(data: RecommendationInput) -> list[RecommendationTask]:
-    """Tạo danh sách hành động ngẫu nhiên sao cho tổng thời gian = free_time"""
-    
+   
     available_tasks = TASKS.copy()
     random.shuffle(available_tasks)
 
@@ -35,17 +37,14 @@ def recommend_tasks(data: RecommendationInput) -> list[RecommendationTask]:
     selected = []
     total = 0
 
-    # 🧠 Logic chọn ngẫu nhiên sao cho tổng thời gian ≈ free_time
     while available_tasks and total < target:
         task = random.choice(available_tasks)
         available_tasks.remove(task)
 
-        # Nếu thêm task này không vượt quá thời gian rảnh
         if total + task["duration"] <= target:
             selected.append(task)
             total += task["duration"]
 
-    # Nếu không chọn được gì (free_time quá nhỏ), chọn task nhỏ nhất
     if not selected and TASKS:
         smallest = min(TASKS, key=lambda t: t["duration"])
         selected.append(smallest)

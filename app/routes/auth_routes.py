@@ -5,10 +5,16 @@ from app.utils.google_auth import verify_google_token
 from app.utils.jwt_handler import create_access_token
 from app.services.auth_service import get_or_create_user
 
+import logging
+
+logger = logging.getLogger("uvicorn")
+
 router = APIRouter()
 
 @router.post("/google")
 def login_with_google(id_token: str, db: Session = Depends(get_db)):
+    logger.info("Received ID token (first 20 chars): %s", id_token[:20])
+
     google_data = verify_google_token(id_token)
     if not google_data:
         raise HTTPException(status_code=401, detail="Invalid Google token")

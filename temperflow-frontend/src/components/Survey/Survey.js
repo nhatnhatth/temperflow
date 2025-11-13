@@ -1,11 +1,21 @@
 import React, { useState, useEffect } from "react";
+import Swal from "sweetalert2"; // ✅ import thư viện
 import SurveyQuestion from "./SurveyQuestion";
+import UserInfoPopover from "./UserInfoPopover";
 
-const Survey = ({ user }) => {
+const Survey = () => {
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
 
+  // Load user từ localStorage khi mount
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) setUser(JSON.parse(storedUser));
+  }, []);
+
+  // Lấy danh sách câu hỏi
   useEffect(() => {
     fetch("http://127.0.0.1:8000/survey/questions")
       .then((res) => res.json())
@@ -24,8 +34,30 @@ const Survey = ({ user }) => {
   };
 
   const handleSubmit = () => {
-    if (!user) return alert("User not found!");
+    if (!user) {
+      Swal.fire({
+        icon: "error",
+        title: "Không tìm thấy người dùng!",
+        text: "Vui lòng đăng nhập lại để tiếp tục.",
+      });
+      return;
+    }
 
+    // Kiểm tra câu hỏi chưa trả lời
+    const unanswered = questions.filter(
+      (q) => !answers[q.id] && answers[q.id] !== 0
+    );
+    if (unanswered.length > 0) {
+      Swal.fire({
+        icon: "warning",
+        title: "Thiếu câu trả lời",
+        text: "Vui lòng điền đầy đủ tất cả các câu hỏi trước khi gửi phản hồi!",
+        confirmButtonText: "Điên tiếp",
+      });
+      return;
+    }
+
+    // Gửi dữ liệu
     fetch("http://127.0.0.1:8000/survey/answers", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -33,12 +65,25 @@ const Survey = ({ user }) => {
     })
       .then((res) => res.json())
       .then(() => {
-        // Lưu answers tạm để Recommendation dùng
         localStorage.setItem("latestSurvey", JSON.stringify(answers));
-        alert("Cảm ơn bạn đã hoàn thành khảo sát 💚");
-        window.location.href = "/recommendations";
+
+        Swal.fire({
+          icon: "success",
+          title: "🎉 Cảm ơn bạn!",
+          text: "Khảo sát đã được gửi thành công 💚",
+          confirmButtonText: "Đi tới gợi ý",
+        }).then(() => {
+          window.location.href = "/recommendations";
+        });
       })
-      .catch((err) => console.error("Submit error:", err));
+      .catch((err) => {
+        console.error("Submit error:", err);
+        Swal.fire({
+          icon: "error",
+          title: "Lỗi gửi khảo sát",
+          text: "Vui lòng thử lại sau!",
+        });
+      });
   };
 
   if (loading) return <p>Loading survey...</p>;
@@ -46,12 +91,18 @@ const Survey = ({ user }) => {
   return (
     <div
       style={{
-        minHeight: "100vh",
+        position: "relative",
+        height: "100vh",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         background: "linear-gradient(135deg, #A8FBD3, #637AB9)",
-        padding: "40px",
+        backgroundImage:
+          "url(https://images.pexels.com/photos/1323550/pexels-photo-1323550.jpeg)",
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
+        margin: 0,
       }}
     >
       <div
@@ -66,7 +117,9 @@ const Survey = ({ user }) => {
           color: "#31326F",
         }}
       >
-        <h2 style={{ marginBottom: "30px", color: "#4FB7B3" }}>🧠 Temperflow Survey</h2>
+        <h2 style={{ marginBottom: "30px", color: "#4FB7B3" }}>
+          🧠 Temperflow Survey
+        </h2>
 
         {questions.map((q) => (
           <SurveyQuestion
@@ -96,6 +149,15 @@ const Survey = ({ user }) => {
           Gửi phản hồi 💬
         </button>
       </div>
+
+      <UserInfoPopover
+        user={user}
+        onLogout={() => {
+          localStorage.removeItem("user");
+          localStorage.removeItem("token");
+          window.location.href = "/login";
+        }}
+      />
     </div>
   );
 };
