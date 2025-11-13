@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Swal from "sweetalert2"; // ✅ import thư viện
 import SurveyQuestion from "./SurveyQuestion";
 import UserInfoPopover from "./UserInfoPopover";
 
@@ -33,36 +34,64 @@ const Survey = () => {
   };
 
   const handleSubmit = () => {
-    if (!user) return alert("User not found!");
-
-    // Kiểm tra tất cả câu hỏi đã điền chưa
-    const unanswered = questions.filter(q => !answers[q.id] && answers[q.id] !== 0);
-    if (unanswered.length > 0) {
-      alert("Vui lòng điền đầy đủ tất cả các câu hỏi trước khi gửi phản hồi!");
+    if (!user) {
+      Swal.fire({
+        icon: "error",
+        title: "Không tìm thấy người dùng!",
+        text: "Vui lòng đăng nhập lại để tiếp tục.",
+      });
       return;
     }
 
+    // Kiểm tra câu hỏi chưa trả lời
+    const unanswered = questions.filter(
+      (q) => !answers[q.id] && answers[q.id] !== 0
+    );
+    if (unanswered.length > 0) {
+      Swal.fire({
+        icon: "warning",
+        title: "Thiếu câu trả lời",
+        text: "Vui lòng điền đầy đủ tất cả các câu hỏi trước khi gửi phản hồi!",
+        confirmButtonText: "Điên tiếp",
+      });
+      return;
+    }
+
+    // Gửi dữ liệu
     fetch("http://127.0.0.1:8000/survey/answers", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId: user.id, answers }),
     })
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(() => {
         localStorage.setItem("latestSurvey", JSON.stringify(answers));
-        alert("Cảm ơn bạn đã hoàn thành khảo sát 💚");
-        window.location.href = "/recommendations";
-      })
-      .catch(err => console.error("Submit error:", err));
-  };
 
+        Swal.fire({
+          icon: "success",
+          title: "🎉 Cảm ơn bạn!",
+          text: "Khảo sát đã được gửi thành công 💚",
+          confirmButtonText: "Đi tới gợi ý",
+        }).then(() => {
+          window.location.href = "/recommendations";
+        });
+      })
+      .catch((err) => {
+        console.error("Submit error:", err);
+        Swal.fire({
+          icon: "error",
+          title: "Lỗi gửi khảo sát",
+          text: "Vui lòng thử lại sau!",
+        });
+      });
+  };
 
   if (loading) return <p>Loading survey...</p>;
 
   return (
     <div
       style={{
-        position: "relative", // để popover avatar hiển thị đúng
+        position: "relative",
         height: "100vh",
         display: "flex",
         justifyContent: "center",
@@ -76,7 +105,6 @@ const Survey = () => {
         margin: 0,
       }}
     >
-      {/* Survey Form */}
       <div
         style={{
           width: "100%",
@@ -122,7 +150,6 @@ const Survey = () => {
         </button>
       </div>
 
-      {/* Avatar + Popover */}
       <UserInfoPopover
         user={user}
         onLogout={() => {
