@@ -2,9 +2,6 @@ import requests
 from app.config import settings
 
 def verify_google_token(id_token: str):
-    """
-    Gửi token tới Google để verify
-    """
     response = requests.get(
         f"https://oauth2.googleapis.com/tokeninfo?id_token={id_token}"
     )

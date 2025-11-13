@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 const UserInfoPopover = ({ user, onLogout }) => {
+  console.log(user)
   const [showInfo, setShowInfo] = useState(false);
 
   if (!user) return null;
@@ -7,7 +8,7 @@ const UserInfoPopover = ({ user, onLogout }) => {
   return (
     <div style={{ position: "absolute", top: "20px", right: "20px" }}>
       <img
-        src={user.avatar || "https://lh3.googleusercontent.com/a/ACg8ocJLQy95mwScUuIxaJdsAToZ5R8EA7m0OIcE5YyLpOCkj_H9b56z=s96-c"}
+        src={user.picture || "https://lh3.googleusercontent.com/a/ACg8ocJLQy95mwScUuIxaJdsAToZ5R8EA7m0OIcE5YyLpOCkj_H9b56z=s96-c"}
         alt="Avatar"
         style={{
           width: "50px",
@@ -39,7 +40,7 @@ const UserInfoPopover = ({ user, onLogout }) => {
             👤 Thông tin người dùng
           </h4>
           <p><strong>Tên:</strong> {user.name}</p>
-          <p><strong>Email:</strong> {user.email}</p>
+          <p><strong>Email:</strong> {user.mail}</p>
           {/* <p><strong>ID:</strong> {user.id}</p> */}
 
           <button
