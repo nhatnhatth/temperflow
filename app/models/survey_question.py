@@ -6,4 +6,4 @@ class SurveyQuestion(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     question_text = Column(String, nullable=False)
-    type = Column(String, default="text")  # text, number, choice
+    type = Column(String, default="text")

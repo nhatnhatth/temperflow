@@ -1,10 +1,7 @@
-import React from "react";
 import { GoogleLogin, googleLogout } from "@react-oauth/google";
-import { decodeGoogleCredential } from "./Survey/googleAuth";
 import backgroundImage from "../assets/background_login.jpg";
 
 const Login = () => {
-
   const handleLoginSuccess = (credentialResponse) => {
     fetch("http://127.0.0.1:8000/auth/google", {
       method: "POST",
@@ -32,7 +29,6 @@ const Login = () => {
     <div style={styles.container}>
       <div style={styles.wapper}>
         <h2 style={styles.title}>Welcome to Temperflow</h2>
-        {/* <p style={styles.text}>Sign in with Google to continue</p> */}
         <GoogleLogin
           onSuccess={handleLoginSuccess}
           onError={handleLoginError}
@@ -41,6 +37,7 @@ const Login = () => {
     </div>
   );
 };
+
 const styles = {
   container: {
     display: "flex",
@@ -50,9 +47,9 @@ const styles = {
     height: "100vh",
     backgroundColor: "#A8FBD3",
     backgroundImage: `url(${backgroundImage})`,
-    backgroundSize: "cover", // ảnh phủ hết màn hình
-    backgroundRepeat: "no-repeat", // không lặp lại
-    backgroundPosition: "center", // canh giữa ảnh
+    backgroundSize: "cover",
+    backgroundRepeat: "no-repeat", 
+    backgroundPosition: "center",
   },
   wapper: {
     backgroundColor: "rgba(255, 255, 255, 0.9)",

@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from "react";
-// import UserInfoPopover from "../Survey/UserInfoPopover";
+import { useEffect, useState } from "react";
 import UserInfoPopover from "./Survey/UserInfoPopover";
 
 
-// Danh sách lời động viên + lời khuyên
 const MOTIVATIONS = [
   {
     text: "Tuyệt vời! Bạn đã hoàn thành các nhiệm vụ và bình tĩnh hơn rất nhiều. Hãy tiếp tục hít thở sâu khi căng thẳng xuất hiện.",
@@ -51,7 +49,6 @@ const Motivation = ({ user }) => {
   const [motivation, setMotivation] = useState(MOTIVATIONS[0]);
 
   useEffect(() => {
-    // Chọn ngẫu nhiên một lời động viên
     const randomIndex = Math.floor(Math.random() * MOTIVATIONS.length);
     setMotivation(MOTIVATIONS[randomIndex]);
   }, []);
@@ -75,7 +72,6 @@ const Motivation = ({ user }) => {
           "url(https://images.pexels.com/photos/1323550/pexels-photo-1323550.jpeg)",
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
-        // padding: "40px",
         textAlign: "center",
       }}
     >

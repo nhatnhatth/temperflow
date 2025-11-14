@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import Swal from "sweetalert2"; // ✅ import thư viện
+import Swal from "sweetalert2";
 
 const TaskCard = ({ task, onStart, onComplete }) => {
   const [started, setStarted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(task.duration * 60); // phút → giây
+  const [timeLeft, setTimeLeft] = useState(task.duration * 60); 
   const [completed, setCompleted] = useState(false);
   const timerRef = useRef(null);
 
-  // Bắt đầu task
   const handleStart = () => {
     Swal.fire({
       title: "Bắt đầu nhiệm vụ?",
@@ -51,7 +50,6 @@ const TaskCard = ({ task, onStart, onComplete }) => {
     });
   };
 
-  // Kết thúc sớm
   const handleEndEarly = () => {
     Swal.fire({
       title: "Kết thúc sớm?",
@@ -77,7 +75,6 @@ const TaskCard = ({ task, onStart, onComplete }) => {
     });
   };
 
-  // Hiển thị thời gian mm:ss
   const formatTime = (seconds) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;

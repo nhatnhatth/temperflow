@@ -1,1 +1,1 @@
-Code by NhatNguSi and Phongnt
+Code by NhatYugi and Phongngáot

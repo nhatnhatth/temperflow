@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2"; // ✅ import thư viện
+import Swal from "sweetalert2";
 import TaskCard from "./TaskCard";
 import UserInfoPopover from "../Survey/UserInfoPopover";
 
@@ -19,7 +19,6 @@ const Recommendation = ({ user }) => {
     }
   }, [user]);
 
-  // Lấy gợi ý task từ API
   useEffect(() => {
     if (!user) return;
 
@@ -58,12 +57,10 @@ const Recommendation = ({ user }) => {
       .finally(() => setLoading(false));
   }, [user]);
 
-  // Khi task hoàn thành
   const handleCompleteTask = (taskId) => {
     setCompletedTasks((prev) => [...prev, taskId]);
   };
 
-  // Khi tất cả task hoàn thành thì sang màn Motivation
   useEffect(() => {
     if (tasks.length > 0 && completedTasks.length === tasks.length) {
       Swal.fire({
@@ -77,7 +74,6 @@ const Recommendation = ({ user }) => {
     }
   }, [completedTasks, tasks, navigate]);
 
-  // Khi bấm "Bắt đầu" task
   const handleStartTask = (task) => {
     Swal.fire({
       title: `Bắt đầu nhiệm vụ:`,
@@ -96,7 +92,6 @@ const Recommendation = ({ user }) => {
           showConfirmButton: false,
         });
 
-        // Giả lập hoàn thành task sau duration phút (chỉ demo)
         setTimeout(() => {
           handleCompleteTask(task.id);
           Swal.fire({
@@ -123,7 +118,6 @@ const Recommendation = ({ user }) => {
           "url(https://images.pexels.com/photos/1323550/pexels-photo-1323550.jpeg)",
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
-        // padding: "40px",
       }}
     >
       <div

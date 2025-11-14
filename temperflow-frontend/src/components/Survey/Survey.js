@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import Swal from "sweetalert2"; // ✅ import thư viện
+import { useState, useEffect } from "react";
+import Swal from "sweetalert2";
 import SurveyQuestion from "./SurveyQuestion";
 import UserInfoPopover from "./UserInfoPopover";
 
@@ -9,13 +9,11 @@ const Survey = () => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
 
-  // Load user từ localStorage khi mount
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) setUser(JSON.parse(storedUser));
   }, []);
 
-  // Lấy danh sách câu hỏi
   useEffect(() => {
     fetch("http://127.0.0.1:8000/survey/questions")
       .then((res) => res.json())
@@ -43,7 +41,6 @@ const Survey = () => {
       return;
     }
 
-    // Kiểm tra câu hỏi chưa trả lời
     const unanswered = questions.filter(
       (q) => !answers[q.id] && answers[q.id] !== 0
     );
@@ -57,16 +54,15 @@ const Survey = () => {
       return;
     }
 
-    // Chuyển answers object → list đúng backend yêu cầu
     const payload = {
       userId: user.id,
       answers: Object.entries(answers).map(([question_id, answer]) => ({
-        question_id: Number(question_id), // key sang số
-        answer: String(answer),           // value sang string
+        question_id: Number(question_id), 
+        answer: String(answer),          
       })),
     };
 
-    console.log("Submitting survey payload:", payload); // debug log
+    console.log("Submitting survey payload:", payload); 
 
     fetch("http://127.0.0.1:8000/survey/answers", {
       method: "POST",

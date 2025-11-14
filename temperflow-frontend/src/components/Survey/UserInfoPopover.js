@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 const UserInfoPopover = ({ user, onLogout }) => {
   console.log(user)
   const [showInfo, setShowInfo] = useState(false);
@@ -41,7 +41,6 @@ const UserInfoPopover = ({ user, onLogout }) => {
           </h4>
           <p><strong>Tên:</strong> {user.name}</p>
           <p><strong>Email:</strong> {user.mail}</p>
-          {/* <p><strong>ID:</strong> {user.id}</p> */}
 
           <button
             onClick={onLogout}

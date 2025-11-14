@@ -23,4 +23,4 @@ def login_with_google(req: GoogleLoginRequest, db: Session = Depends(get_db)):
 
     user = get_or_create_user(db, google_data)
     jwt_token = create_access_token({"sub": user.email})
-    return {"name": user.name, "mail": user.email, "picture": user.picture}
+    return {"id": user.google_id, "name": user.name, "mail": user.email, "picture": user.picture}

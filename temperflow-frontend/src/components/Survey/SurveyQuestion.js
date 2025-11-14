@@ -3,7 +3,6 @@ import React, { useState } from "react";
 const SurveyQuestion = ({ question, value, onChange }) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
-  // Tooltip chỉ áp dụng cho câu hỏi mức độ tức giận
   const angerLevels =
     question.question_text === "Mức độ tức giận hiện tại của bạn (1–10)"
       ? [
@@ -36,7 +35,6 @@ const SurveyQuestion = ({ question, value, onChange }) => {
         {question.question_text}
       </label>
 
-      {/* Tooltip */}
       {showTooltip && (
         <div
           style={{
