@@ -1,9 +1,14 @@
 import random
+import logging
+import google.generativeai as genai
 from app.schemas.recommendation_schema import RecommendationTask, RecommendationInput
 
-import logging
-
 logger = logging.getLogger("uvicorn")
+
+# Cấu hình API Gemini
+genai.configure(api_key="AIzaSyAF1svbzpYBFLOsHdoS5qtMe8QwJuwKEhA")
+
+model = genai.GenerativeModel("gemini-2.5-flash")
 
 TASKS = [
     {"title": "Thở sâu", "duration": 1, "description": "Hít thở sâu 1 phút", "type": "thư giãn"},
@@ -28,8 +33,7 @@ TASKS = [
     {"title": "Tập thể dục ngắn", "duration": 20, "description": "Bài tập nhẹ giúp giải tỏa năng lượng", "type": "vận động"},
 ]
 
-def recommend_tasks(data: RecommendationInput) -> list[RecommendationTask]:
-   
+def recommend_tasks(data: RecommendationInput):
     available_tasks = TASKS.copy()
     random.shuffle(available_tasks)
 
@@ -48,5 +52,31 @@ def recommend_tasks(data: RecommendationInput) -> list[RecommendationTask]:
     if not selected and TASKS:
         smallest = min(TASKS, key=lambda t: t["duration"])
         selected.append(smallest)
+    print(data)
+    # --- PROMPT GỬI GEMINI ---
+    selected_titles = ", ".join([t["title"] for t in selected])
+    prompt = f"""
+    Người dùng có mức độ tức giận là  {data.anger_level} , {data.free_time} phút rảnh, tôi đang ở {data.location}  và cảm thấy: {data.emotions} .
+    Các hoạt động đã gợi ý: {selected_titles}.
+    Viết 1–2 câu lời khuyên để giúp họ cải thiện tinh thần.
+    """
 
-    return [RecommendationTask(**t) for t in selected]
+    try:
+        ai_response = model.generate_content(prompt)
+        extra_advice = ai_response.text
+    except Exception as e:
+        logger.error("Gemini API Error: %s", e)
+        extra_advice = "Hãy dành một chút thời gian để lắng nghe cơ thể và thư giãn nhẹ nhàng."
+
+    result = [RecommendationTask(**t) for t in selected]
+
+    result.append(
+        RecommendationTask(
+            title="Lời khuyên thêm từ trợ lý Gemimi",
+            duration=0,
+            description=extra_advice,
+            type="Trợ lý",
+        )
+    )
+
+    return result

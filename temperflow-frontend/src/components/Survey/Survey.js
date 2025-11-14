@@ -52,18 +52,31 @@ const Survey = () => {
         icon: "warning",
         title: "Thiếu câu trả lời",
         text: "Vui lòng điền đầy đủ tất cả các câu hỏi trước khi gửi phản hồi!",
-        confirmButtonText: "Điên tiếp",
+        confirmButtonText: "Điền tiếp",
       });
       return;
     }
 
-    // Gửi dữ liệu
+    // Chuyển answers object → list đúng backend yêu cầu
+    const payload = {
+      userId: user.id,
+      answers: Object.entries(answers).map(([question_id, answer]) => ({
+        question_id: Number(question_id), // key sang số
+        answer: String(answer),           // value sang string
+      })),
+    };
+
+    console.log("Submitting survey payload:", payload); // debug log
+
     fetch("http://127.0.0.1:8000/survey/answers", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: user.id, answers }),
+      body: JSON.stringify(payload),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
       .then(() => {
         localStorage.setItem("latestSurvey", JSON.stringify(answers));
 
@@ -85,6 +98,7 @@ const Survey = () => {
         });
       });
   };
+
 
   if (loading) return <p>Loading survey...</p>;
 

@@ -1,13 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2"; // ✅ import thư viện
 import TaskCard from "./TaskCard";
+import UserInfoPopover from "../Survey/UserInfoPopover";
+
 
 const Recommendation = ({ user }) => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [completedTasks, setCompletedTasks] = useState([]);
   const navigate = useNavigate();
+  const [localUser, setLocalUser] = useState(user || null);
 
+  useEffect(() => {
+    if (!user) {
+      const stored = localStorage.getItem("user");
+      if (stored) setLocalUser(JSON.parse(stored));
+    }
+  }, [user]);
+
+  // Lấy gợi ý task từ API
   useEffect(() => {
     if (!user) return;
 
@@ -23,16 +35,24 @@ const Recommendation = ({ user }) => {
         anger_level: surveyAnswers[1] || 5,
         free_time: surveyAnswers[2] || 20,
         location: surveyAnswers[3] || "home",
-        emotions: [],
+        emotions: surveyAnswers[4] || "none",
       }),
     })
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
       })
-      .then((data) => setTasks(data || []))
+      .then((data) => {
+        setTasks(data || []);
+      })
       .catch((err) => {
         console.error("Fetch recommendations error:", err);
+        Swal.fire({
+          icon: "error",
+          title: "Lỗi tải gợi ý 😢",
+          text: "Không thể lấy danh sách gợi ý. Vui lòng thử lại sau.",
+          confirmButtonText: "OK",
+        });
         setTasks([]);
       })
       .finally(() => setLoading(false));
@@ -43,20 +63,52 @@ const Recommendation = ({ user }) => {
     setCompletedTasks((prev) => [...prev, taskId]);
   };
 
-  // Tự động redirect khi tất cả task hoàn thành
+  // Khi tất cả task hoàn thành thì sang màn Motivation
   useEffect(() => {
-    console.log(completedTasks)
-    console.log(tasks)
     if (tasks.length > 0 && completedTasks.length === tasks.length) {
-      navigate("/motivation"); // sang màn Motivation
+      Swal.fire({
+        icon: "success",
+        title: "Hoàn thành tất cả nhiệm vụ 🎉",
+        text: "Tuyệt vời! Cùng xem điều gì chờ bạn tiếp theo nhé.",
+        confirmButtonText: "Let's go 🚀",
+      }).then(() => {
+        navigate("/motivation");
+      });
     }
   }, [completedTasks, tasks, navigate]);
 
-  // Thêm logic onStart: sau khi bấm Bắt đầu -> giả lập hoàn thành task sau duration phút
+  // Khi bấm "Bắt đầu" task
   const handleStartTask = (task) => {
-    alert(`Bắt đầu task: ${task.title}`);
-    // Giả lập xong task sau task.duration phút (chỉ demo)
-    setTimeout(() => handleCompleteTask(task.id), task.duration * 60000);
+    Swal.fire({
+      title: `Bắt đầu nhiệm vụ:`,
+      text: `${task.title}`,
+      icon: "info",
+      showCancelButton: true,
+      confirmButtonText: "Bắt đầu ngay 💪",
+      cancelButtonText: "Để sau",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Đang thực hiện...",
+          text: `Hãy dành ${task.duration} phút để hoàn thành nhé!`,
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+
+        // Giả lập hoàn thành task sau duration phút (chỉ demo)
+        setTimeout(() => {
+          handleCompleteTask(task.id);
+          Swal.fire({
+            icon: "success",
+            title: "Hoàn thành nhiệm vụ ✅",
+            text: `${task.title} đã được đánh dấu là hoàn thành!`,
+            timer: 2000,
+            showConfirmButton: false,
+          });
+        }, task.duration * 60000);
+      }
+    });
   };
 
   return (
@@ -67,7 +119,11 @@ const Recommendation = ({ user }) => {
         justifyContent: "center",
         alignItems: "center",
         background: "linear-gradient(135deg, #A8FBD3, #637AB9)",
-        padding: "40px",
+        backgroundImage:
+          "url(https://images.pexels.com/photos/1323550/pexels-photo-1323550.jpeg)",
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat",
+        // padding: "40px",
       }}
     >
       <div
@@ -99,6 +155,15 @@ const Recommendation = ({ user }) => {
             />
           ))}
       </div>
+      <UserInfoPopover
+        user={localUser}
+        onLogout={() => {
+          localStorage.removeItem("user");
+          localStorage.removeItem("token");
+          window.location.href = "/login";
+        }}
+      />
+
     </div>
   );
 };

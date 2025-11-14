@@ -11,4 +11,4 @@ class RecommendationInput(BaseModel):
     anger_level: int
     free_time: int      
     location: Optional[str] = None
-    emotions: Optional[List[str]] = []
+    emotions: Optional[str] = None

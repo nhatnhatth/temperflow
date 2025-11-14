@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from "react";
+// import UserInfoPopover from "../Survey/UserInfoPopover";
+import UserInfoPopover from "./Survey/UserInfoPopover";
+
 
 // Danh sách lời động viên + lời khuyên
 const MOTIVATIONS = [
@@ -44,7 +47,7 @@ const MOTIVATIONS = [
   },
 ];
 
-const Motivation = () => {
+const Motivation = ({ user }) => {
   const [motivation, setMotivation] = useState(MOTIVATIONS[0]);
 
   useEffect(() => {
@@ -52,7 +55,14 @@ const Motivation = () => {
     const randomIndex = Math.floor(Math.random() * MOTIVATIONS.length);
     setMotivation(MOTIVATIONS[randomIndex]);
   }, []);
-
+    const [localUser, setLocalUser] = useState(user || null);
+  
+    useEffect(() => {
+      if (!user) {
+        const stored = localStorage.getItem("user");
+        if (stored) setLocalUser(JSON.parse(stored));
+      }
+    }, [user]);
   return (
     <div
       style={{
@@ -61,7 +71,11 @@ const Motivation = () => {
         justifyContent: "center",
         alignItems: "center",
         background: "linear-gradient(135deg, #A8FBD3, #637AB9)",
-        padding: "40px",
+        backgroundImage:
+          "url(https://images.pexels.com/photos/1323550/pexels-photo-1323550.jpeg)",
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat",
+        // padding: "40px",
         textAlign: "center",
       }}
     >
@@ -82,6 +96,14 @@ const Motivation = () => {
           style={{ width: "100%", borderRadius: "12px" }}
         />
       </div>
+      <UserInfoPopover
+        user={localUser}
+        onLogout={() => {
+          localStorage.removeItem("user");
+          localStorage.removeItem("token");
+          window.location.href = "/login";
+        }}
+      />
     </div>
   );
 };
