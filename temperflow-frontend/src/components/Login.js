@@ -5,28 +5,22 @@ import backgroundImage from "../assets/background_login.jpg";
 
 const Login = () => {
 
-  // const handleLoginSuccess = (credentialResponse) => {
-  //   console.log("Login Success:", credentialResponse);
-
-  //   // TODO: Gửi credentialResponse.credential (JWT) về backend
-  //   // ví dụ: POST /auth/google
-  //   // backend trả JWT token để lưu vào localStorage
-  //   localStorage.setItem("token", credentialResponse.credential);
-
-  //   // Chuyển sang home
-  //   window.location.href = "/survey";
-  // };
-
   const handleLoginSuccess = (credentialResponse) => {
-    const user = decodeGoogleCredential(credentialResponse.credential);
+    console.log(credentialResponse.credential)
+    fetch("http://127.0.0.1:8000/auth/google", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id_token: credentialResponse.credential }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        localStorage.setItem("user", JSON.stringify(data));
+        localStorage.setItem("token", credentialResponse.credential);
 
-    if (!user) return alert("Login failed: cannot decode Google token");
+        window.location.href = "/survey";
+      })
 
-    // Lưu vào localStorage
-    localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("token", credentialResponse.credential);
 
-    window.location.href = "/survey";
   };
 
   const handleLoginError = () => {
