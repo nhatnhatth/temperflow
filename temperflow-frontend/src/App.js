@@ -33,7 +33,7 @@ function App() {
       <Router>
         <Routes>
           {/* Root route chuyển hướng dựa trên token */}
-          <Route path="/" element={<Navigate to={token ? "/survey" : "/login"} />} />
+          <Route path="/" element={<Navigate to={"/login"} />} />
 
           {/* Login */}
           <Route path="/login" element={<Login setUser={setUser} />} />

@@ -6,7 +6,6 @@ import backgroundImage from "../assets/background_login.jpg";
 const Login = () => {
 
   const handleLoginSuccess = (credentialResponse) => {
-    console.log(credentialResponse.credential)
     fetch("http://127.0.0.1:8000/auth/google", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -19,14 +18,15 @@ const Login = () => {
 
         window.location.href = "/survey";
       })
-
-
   };
 
   const handleLoginError = () => {
     console.log("Login Failed");
     alert("Login failed. Try again.");
   };
+
+  if(localStorage.getItem("token"))
+    handleLoginSuccess(localStorage.getItem("token"))
 
   return (
     <div style={styles.container}>
