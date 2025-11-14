@@ -1,10 +1,14 @@
 import random
-import requests
-import json
 import logging
+import google.generativeai as genai
 from app.schemas.recommendation_schema import RecommendationTask, RecommendationInput
 
 logger = logging.getLogger("uvicorn")
+
+# Cấu hình API Gemini
+genai.configure(api_key="AIzaSyAF1svbzpYBFLOsHdoS5qtMe8QwJuwKEhA")
+
+model = genai.GenerativeModel("gemini-2.5-flash")
 
 TASKS = [
     {"title": "Thở sâu", "duration": 1, "description": "Hít thở sâu 1 phút", "type": "thư giãn"},
@@ -29,14 +33,7 @@ TASKS = [
     {"title": "Tập thể dục ngắn", "duration": 20, "description": "Bài tập nhẹ giúp giải tỏa năng lượng", "type": "vận động"},
 ]
 
-API_KEY = "AIzaSyAOYmNFubyVqVDCJphp5CMYvNRTh7_wbsc"  # Gemini API Key
-
-def recommend_tasks(data: RecommendationInput) -> list[RecommendationTask]:
-    """
-    Trả về danh sách task gốc dựa trên thời gian + 1 task Gemini dựa trên survey.
-    Ghi log task Gemini ra console.
-    """
-    # --- Task gốc ---
+def recommend_tasks(data: RecommendationInput):
     available_tasks = TASKS.copy()
     random.shuffle(available_tasks)
 
@@ -47,54 +44,39 @@ def recommend_tasks(data: RecommendationInput) -> list[RecommendationTask]:
     while available_tasks and total < target:
         task = random.choice(available_tasks)
         available_tasks.remove(task)
+
         if total + task["duration"] <= target:
             selected.append(task)
             total += task["duration"]
 
     if not selected and TASKS:
-        selected.append(min(TASKS, key=lambda t: t["duration"]))
+        smallest = min(TASKS, key=lambda t: t["duration"])
+        selected.append(smallest)
+    print(data)
+    # --- PROMPT GỬI GEMINI ---
+    selected_titles = ", ".join([t["title"] for t in selected])
+    prompt = f"""
+    Người dùng có mức độ tức giận là  {data.anger_level} , {data.free_time} phút rảnh, tôi đang ở {data.location}  và cảm thấy: {data.emotions} .
+    Các hoạt động đã gợi ý: {selected_titles}.
+    Viết 1–2 câu lời khuyên để giúp họ cải thiện tinh thần.
+    """
 
-    # --- Task Gemini ---
-    print(f"[Gemini Input] Data: {data}")
+    try:
+        ai_response = model.generate_content(prompt)
+        extra_advice = ai_response.text
+    except Exception as e:
+        logger.error("Gemini API Error: %s", e)
+        extra_advice = "Hãy dành một chút thời gian để lắng nghe cơ thể và thư giãn nhẹ nhàng."
 
-    if data:
-        print("[Gemini] Gọi API Gemini để tạo task cá nhân hóa...")
+    result = [RecommendationTask(**t) for t in selected]
 
-        # Chuyển data thành dict nếu là object
-        data_dict = vars(data) if not isinstance(data, dict) else data
-
-        prompt = (
-            f"Đưa ra các lời khuyên giúp user thư giãn hoặc cải thiện tâm trạng dựa trên các thông tin sau:\n"
-            f"{data_dict}\n"
-            f"Hãy trả về JSON chuẩn: {{\"title\": ..., \"description\": ..., \"type\": ..., \"duration\": ...}}"
+    result.append(
+        RecommendationTask(
+            title="Lời khuyên thêm từ trợ lý Gemimi",
+            duration=0,
+            description=extra_advice,
+            type="Trợ lý",
         )
+    )
 
-        url = "https://generativelanguage.googleapis.com/v1beta2/models/text-bison-001:generate"
-        headers = {"Authorization": f"Bearer {API_KEY}"}
-        payload = {"prompt": {"text": prompt}, "temperature": 0.7, "maxOutputTokens": 200}
-
-        try:
-            response = requests.post(url, json=payload, headers=headers, timeout=10)
-            response.raise_for_status()
-            result = response.json()
-            text = result["candidates"][0]["content"][0]["text"]
-            print(f"[Gemini Response] {text}")
-            
-            # Chuyển JSON từ string sang dict
-            ai_task = json.loads(text)
-
-        except Exception as e:
-            logger.warning(f"Gemini API error: {e}")
-            ai_task = {
-                "title": "Ngồi thiền nhanh",
-                "description": "Dành 3 phút ngồi thiền tập trung hơi thở",
-                "type": "thư giãn",
-                "duration": 3
-            }
-
-        # Thêm task Gemini vào danh sách
-        selected.append(ai_task)
-        print(f"[Gemini Task] {ai_task['title']} - {ai_task['description']} ({ai_task['type']}, {ai_task['duration']} phút)")
-
-
-    return [RecommendationTask(**t) for t in selected]
+    return result

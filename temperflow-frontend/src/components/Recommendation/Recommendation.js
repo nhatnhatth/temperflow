@@ -35,7 +35,7 @@ const Recommendation = ({ user }) => {
         anger_level: surveyAnswers[1] || 5,
         free_time: surveyAnswers[2] || 20,
         location: surveyAnswers[3] || "home",
-        emotions: [],
+        emotions: surveyAnswers[4] || "none",
       }),
     })
       .then((res) => {
@@ -123,7 +123,7 @@ const Recommendation = ({ user }) => {
           "url(https://images.pexels.com/photos/1323550/pexels-photo-1323550.jpeg)",
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
-        padding: "40px",
+        // padding: "40px",
       }}
     >
       <div
