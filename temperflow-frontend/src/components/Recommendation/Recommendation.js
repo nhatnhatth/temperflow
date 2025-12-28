@@ -4,7 +4,6 @@ import Swal from "sweetalert2";
 import TaskCard from "./TaskCard";
 import UserInfoPopover from "../Survey/UserInfoPopover";
 
-
 const Recommendation = ({ user }) => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,6 +11,7 @@ const Recommendation = ({ user }) => {
   const navigate = useNavigate();
   const [localUser, setLocalUser] = useState(user || null);
 
+  // Load user từ localStorage nếu không có prop
   useEffect(() => {
     if (!user) {
       const stored = localStorage.getItem("user");
@@ -19,8 +19,9 @@ const Recommendation = ({ user }) => {
     }
   }, [user]);
 
+  // Fetch task recommendation từ backend
   useEffect(() => {
-    if (!user) return;
+    if (!localUser) return;
 
     setLoading(true);
 
@@ -30,7 +31,7 @@ const Recommendation = ({ user }) => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        userId: user.id,
+        userId: localUser.id,
         anger_level: surveyAnswers[1] || 5,
         free_time: surveyAnswers[2] || 20,
         location: surveyAnswers[3] || "home",
@@ -41,32 +42,31 @@ const Recommendation = ({ user }) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
       })
-      .then((data) => {
-        setTasks(data || []);
-      })
+      .then((data) => setTasks(data || []))
       .catch((err) => {
         console.error("Fetch recommendations error:", err);
         Swal.fire({
           icon: "error",
-          title: "Lỗi tải gợi ý 😢",
-          text: "Không thể lấy danh sách gợi ý. Vui lòng thử lại sau.",
+          title: "Failed to load recommendations 😢",
+          text: "Unable to fetch the recommendation list. Please try again later.",
           confirmButtonText: "OK",
         });
         setTasks([]);
       })
       .finally(() => setLoading(false));
-  }, [user]);
+  }, [localUser]);
 
   const handleCompleteTask = (taskId) => {
     setCompletedTasks((prev) => [...prev, taskId]);
   };
 
+  // Khi hoàn tất tất cả task
   useEffect(() => {
-    if (tasks.length > 0 && completedTasks.length === tasks.length) {
+    if (tasks.length > 0 && completedTasks.length === tasks.length - 1) {
       Swal.fire({
         icon: "success",
-        title: "Hoàn thành tất cả nhiệm vụ 🎉",
-        text: "Tuyệt vời! Cùng xem điều gì chờ bạn tiếp theo nhé.",
+        title: "All tasks completed 🎉",
+        text: "Great! Let's see what’s next for you.",
         confirmButtonText: "Let's go 🚀",
       }).then(() => {
         navigate("/motivation");
@@ -76,17 +76,17 @@ const Recommendation = ({ user }) => {
 
   const handleStartTask = (task) => {
     Swal.fire({
-      title: `Bắt đầu nhiệm vụ:`,
+      title: `Start task:`,
       text: `${task.title}`,
       icon: "info",
       showCancelButton: true,
-      confirmButtonText: "Bắt đầu ngay 💪",
-      cancelButtonText: "Để sau",
+      confirmButtonText: "Start now 💪",
+      cancelButtonText: "Later",
     }).then((result) => {
       if (result.isConfirmed) {
         Swal.fire({
-          title: "Đang thực hiện...",
-          text: `Hãy dành ${task.duration} phút để hoàn thành nhé!`,
+          title: "In progress...",
+          text: `Please spend ${task.duration} minutes to complete this task!`,
           icon: "success",
           timer: 2000,
           showConfirmButton: false,
@@ -96,8 +96,8 @@ const Recommendation = ({ user }) => {
           handleCompleteTask(task.id);
           Swal.fire({
             icon: "success",
-            title: "Hoàn thành nhiệm vụ ✅",
-            text: `${task.title} đã được đánh dấu là hoàn thành!`,
+            title: "Task completed ✅",
+            text: `${task.title} has been marked as done!`,
             timer: 2000,
             showConfirmButton: false,
           });
@@ -133,22 +133,51 @@ const Recommendation = ({ user }) => {
         }}
       >
         <h2 style={{ marginBottom: "20px", color: "#4FB7B3" }}>
-          Gợi ý việc nên làm hôm nay
+          Recommended tasks for today
         </h2>
 
-        {loading && <p>Đang tải gợi ý...</p>}
-        {!loading && tasks.length === 0 && <p>Chưa có nhiệm vụ nào phù hợp.</p>}
+        {loading && <p>Loading recommendations...</p>}
+        {!loading && tasks.length === 0 && <p>No suitable tasks available yet.</p>}
 
         {!loading &&
-          tasks.map((task) => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              onStart={handleStartTask}
-              onComplete={handleCompleteTask}
-            />
-          ))}
+          tasks.map((task) => {
+            if (task.type === "Assistant") {
+              // UI riêng cho Assistant
+              return (
+                <div
+                  key={task.id}
+                  style={{
+                    background: "linear-gradient(135deg, #FFD194, #D1913C)",
+                    color: "#333",
+                    padding: "20px",
+                    borderRadius: "15px",
+                    marginBottom: "15px",
+                    boxShadow: "0 4px 15px rgba(0,0,0,0.2)",
+                    textAlign: "center",
+                  }}
+                >
+                  <h3 style={{ marginBottom: "10px", fontSize: "1.2rem" }}>
+                    🧠 {task.title}
+                  </h3>
+                  <p style={{ fontSize: "1rem", lineHeight: "1.4" }}>
+                    {task.description}
+                  </p>
+                </div>
+              );
+            } else {
+              // Task bình thường
+              return (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  onStart={handleStartTask}
+                  onComplete={handleCompleteTask}
+                />
+              );
+            }
+          })}
       </div>
+
       <UserInfoPopover
         user={localUser}
         onLogout={() => {
@@ -157,7 +186,6 @@ const Recommendation = ({ user }) => {
           window.location.href = "/login";
         }}
       />
-
     </div>
   );
 };

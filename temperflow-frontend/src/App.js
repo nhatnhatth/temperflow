@@ -5,6 +5,7 @@ import Login from "./components/Login";
 import Survey from "./components/Survey/Survey";
 import Recommendation from "./components/Recommendation/Recommendation";
 import Motivation from "./components/Motivation";
+import Dashboard from "./components/Dashboard";
 
 function App() {
 
@@ -27,7 +28,7 @@ function App() {
   }, [token, user]);
 
   return (
-    <GoogleOAuthProvider clientId="733915170209-fvmq05vhmfath7l4ijubfvj2o73vq4gv.apps.googleusercontent.com">
+    <GoogleOAuthProvider clientId="733915170209-fvmq05vhmfath7l4ijubfvj2o73vq4gv.apps.googleusercontent.com" locale="en">
       <Router>
         <Routes>
           <Route path="/" element={<Navigate to={"/login"} />} />
@@ -37,6 +38,8 @@ function App() {
           <Route path="/survey" element={token && user ? <Survey user={user} /> : <Navigate to="/login" />} />
 
           <Route path="/motivation" element={token && user ? <Motivation/> : <Navigate to="/login" />} />
+
+          <Route path="/dashboard" element={token && user ? <Dashboard/> : <Navigate to="/login" />} />
 
           <Route
             path="/recommendations"

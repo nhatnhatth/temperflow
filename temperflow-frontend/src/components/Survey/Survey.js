@@ -35,8 +35,8 @@ const Survey = () => {
     if (!user) {
       Swal.fire({
         icon: "error",
-        title: "Không tìm thấy người dùng!",
-        text: "Vui lòng đăng nhập lại để tiếp tục.",
+        title: "User not found!",
+        text: "Please log in again to continue.",
       });
       return;
     }
@@ -47,9 +47,9 @@ const Survey = () => {
     if (unanswered.length > 0) {
       Swal.fire({
         icon: "warning",
-        title: "Thiếu câu trả lời",
-        text: "Vui lòng điền đầy đủ tất cả các câu hỏi trước khi gửi phản hồi!",
-        confirmButtonText: "Điền tiếp",
+        title: "Missing answers",
+        text: "Please answer all questions before submitting!",
+        confirmButtonText: "Continue filling",
       });
       return;
     }
@@ -57,12 +57,12 @@ const Survey = () => {
     const payload = {
       userId: user.id,
       answers: Object.entries(answers).map(([question_id, answer]) => ({
-        question_id: Number(question_id), 
-        answer: String(answer),          
+        question_id: Number(question_id),
+        answer: String(answer),
       })),
     };
 
-    console.log("Submitting survey payload:", payload); 
+    console.log("Submitting survey payload:", payload);
 
     fetch("http://127.0.0.1:8000/survey/answers", {
       method: "POST",
@@ -78,9 +78,9 @@ const Survey = () => {
 
         Swal.fire({
           icon: "success",
-          title: "🎉 Cảm ơn bạn!",
-          text: "Khảo sát đã được gửi thành công 💚",
-          confirmButtonText: "Đi tới gợi ý",
+          title: "🎉 Thank you!",
+          text: "Your survey has been submitted successfully 💚",
+          confirmButtonText: "Go to recommendations",
         }).then(() => {
           window.location.href = "/recommendations";
         });
@@ -89,12 +89,11 @@ const Survey = () => {
         console.error("Submit error:", err);
         Swal.fire({
           icon: "error",
-          title: "Lỗi gửi khảo sát",
-          text: "Vui lòng thử lại sau!",
+          title: "Survey submission error",
+          text: "Please try again later!",
         });
       });
   };
-
 
   if (loading) return <p>Loading survey...</p>;
 
@@ -128,7 +127,7 @@ const Survey = () => {
         }}
       >
         <h2 style={{ marginBottom: "30px", color: "#4FB7B3" }}>
-          🧠 Temperflow Survey
+          🧠 Cooldown Survey
         </h2>
 
         {questions.map((q) => (
@@ -156,7 +155,7 @@ const Survey = () => {
           onMouseOver={(e) => (e.target.style.backgroundColor = "#637AB9")}
           onMouseOut={(e) => (e.target.style.backgroundColor = "#4FB7B3")}
         >
-          Gửi phản hồi 💬
+          Submit feedback 💬
         </button>
       </div>
 

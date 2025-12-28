@@ -1,46 +1,45 @@
 import { useEffect, useState } from "react";
 import UserInfoPopover from "./Survey/UserInfoPopover";
 
-
 const MOTIVATIONS = [
   {
-    text: "Tuyệt vời! Bạn đã hoàn thành các nhiệm vụ và bình tĩnh hơn rất nhiều. Hãy tiếp tục hít thở sâu khi căng thẳng xuất hiện.",
+    text: "Awesome! You have completed your tasks and feel much calmer. Keep taking deep breaths when stress arises.",
     gif: "https://media.giphy.com/media/111ebonMs90YLu/giphy.gif",
   },
   {
-    text: "Bravo! Mọi task đã xong, và cảm xúc của bạn ổn định hơn. Nhớ dành vài phút mỗi ngày để đi dạo hoặc thư giãn.",
+    text: "Bravo! All tasks are done, and your emotions are more balanced. Remember to take a few minutes each day to walk or relax.",
     gif: "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif",
   },
   {
-    text: "Bạn thật chăm chỉ! Nhiệm vụ hoàn tất và tức giận đã giảm. Hãy thử viết nhật ký mỗi tối để duy trì sự bình tĩnh.",
+    text: "You are so diligent! Tasks completed and anger reduced. Try journaling each night to maintain your calm.",
     gif: "https://media.giphy.com/media/xT0xeJpnrWC4XWblEk/giphy.gif",
   },
   {
-    text: "Chúc mừng! Bạn đã kiểm soát tốt cảm xúc hôm nay. Nhớ lắng nghe nhạc nhẹ hoặc thiền ngắn để giữ tinh thần thoải mái.",
+    text: "Congratulations! You managed your emotions well today. Listen to soft music or do a short meditation to stay relaxed.",
     gif: "https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif",
   },
   {
-    text: "Tất cả task đã hoàn thành, và bạn đã thư giãn hơn. Hãy tự thưởng cho bản thân một cốc trà hoặc một chút giải trí yêu thích.",
+    text: "All tasks completed, and you feel more relaxed. Treat yourself to a cup of tea or a small favorite pastime.",
     gif: "https://media.giphy.com/media/3ohhwF34cGDoFFhRfy/giphy.gif",
   },
   {
-    text: "Tuyệt hảo! Bạn vừa hoàn thành mọi việc và giảm stress hiệu quả. Hãy giữ thói quen hít thở chậm để đối phó với áp lực.",
+    text: "Excellent! You just finished everything and reduced stress effectively. Keep practicing slow breathing to handle pressure.",
     gif: "https://media.giphy.com/media/l4pTfx2qLszoacZRS/giphy.gif",
   },
   {
-    text: "Bravo! Cảm xúc của bạn đã ổn định sau khi hoàn thành các nhiệm vụ. Hãy thử tập giãn cơ nhẹ để duy trì năng lượng tích cực.",
+    text: "Bravo! Your emotions are stable after completing your tasks. Try some light stretching to maintain positive energy.",
     gif: "https://media.giphy.com/media/l0Exk8EUzSLsrErEQ/giphy.gif",
   },
   {
-    text: "Bạn thật tuyệt vời! Task hoàn thành, tức giận giảm. Hãy dành 5 phút nhắm mắt thư giãn trước khi tiếp tục công việc khác.",
+    text: "You are amazing! Tasks completed, anger reduced. Take 5 minutes to close your eyes and relax before moving on.",
     gif: "https://media.giphy.com/media/3orieZkzVG27WRu5EA/giphy.gif",
   },
   {
-    text: "Chúc mừng! Bạn đã kiểm soát cơn giận và hoàn thành tất cả nhiệm vụ. Hãy tạo thói quen nhắc nhở bản thân khi cảm xúc bùng phát.",
+    text: "Congratulations! You controlled your anger and finished all tasks. Make it a habit to remind yourself when emotions flare.",
     gif: "https://media.giphy.com/media/xT9IgG50Fb7Mi0prBC/giphy.gif",
   },
   {
-    text: "Tuyệt vời! Bạn đã kết thúc các task và tâm trạng ổn định hơn. Hãy tiếp tục duy trì thói quen này để ngày mai tràn đầy năng lượng tích cực.",
+    text: "Awesome! You finished your tasks and your mood is more stable. Keep this habit to wake up with positive energy tomorrow.",
     gif: "https://media.giphy.com/media/3o6ZsVJh3z4pS0CZ3i/giphy.gif",
   },
 ];
@@ -52,14 +51,16 @@ const Motivation = ({ user }) => {
     const randomIndex = Math.floor(Math.random() * MOTIVATIONS.length);
     setMotivation(MOTIVATIONS[randomIndex]);
   }, []);
-    const [localUser, setLocalUser] = useState(user || null);
-  
-    useEffect(() => {
-      if (!user) {
-        const stored = localStorage.getItem("user");
-        if (stored) setLocalUser(JSON.parse(stored));
-      }
-    }, [user]);
+
+  const [localUser, setLocalUser] = useState(user || null);
+
+  useEffect(() => {
+    if (!user) {
+      const stored = localStorage.getItem("user");
+      if (stored) setLocalUser(JSON.parse(stored));
+    }
+  }, [user]);
+
   return (
     <div
       style={{
@@ -84,7 +85,7 @@ const Motivation = ({ user }) => {
           maxWidth: "600px",
         }}
       >
-        <h2 style={{ color: "#4FB7B3", marginBottom: "20px" }}>🎉 Chúc mừng!</h2>
+        <h2 style={{ color: "#4FB7B3", marginBottom: "20px" }}>🎉 Congratulations!</h2>
         <p style={{ fontSize: "18px", marginBottom: "20px" }}>{motivation.text}</p>
         <img
           src={motivation.gif}

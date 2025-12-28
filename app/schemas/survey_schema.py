@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import List
+from datetime import datetime
 
 class SurveyQuestionSchema(BaseModel):
     id: int
@@ -15,3 +16,11 @@ class SurveyAnswerInput(BaseModel):
 
 class SurveySubmitSchema(BaseModel):
     answers: List[SurveyAnswerInput]
+
+class SurveyAnswerWithDate(BaseModel):
+    question_id: int
+    answer: str
+    answered_at: datetime
+
+    class Config:
+        orm_mode = True

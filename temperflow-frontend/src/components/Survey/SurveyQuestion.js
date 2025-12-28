@@ -4,18 +4,18 @@ const SurveyQuestion = ({ question, value, onChange }) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
   const angerLevels =
-    question.question_text === "Mức độ tức giận hiện tại của bạn (1–10)"
+    question.type === "level"
       ? [
-          "1 - Hoàn toàn bình tĩnh, không tức giận",
-          "2 - Hơi khó chịu, bực nhẹ",
-          "3 - Khó chịu rõ ràng nhưng vẫn kiểm soát tốt",
-          "4 - Bực bội, bắt đầu mất kiên nhẫn",
-          "5 - Tức giận vừa phải, có thể nổi cáu nhưng vẫn kiềm được",
-          "6 - Giận khá nhiều, cảm thấy muốn phản ứng mạnh",
-          "7 - Rất giận, khó kiềm chế cảm xúc",
-          "8 - Tức giận dữ dội, dễ mất kiểm soát",
-          "9 - Tức giận cực độ, gần như bùng nổ",
-          "10 - Giận điên người, mất kiểm soát hoàn toàn",
+          "1 - Completely calm, no anger at all",
+          "2 - Slightly annoyed, mild irritation",
+          "3 - Clearly annoyed but still in control",
+          "4 - Irritated, starting to lose patience",
+          "5 - Moderately angry, may snap but still holding back",
+          "6 - Quite angry, feeling the urge to react strongly",
+          "7 - Very angry, emotions are hard to control",
+          "8 - Extremely angry, easily losing control",
+          "9 - Furious, on the verge of exploding",
+          "10 - Enraged, completely out of control",
         ]
       : [];
 
@@ -58,11 +58,19 @@ const SurveyQuestion = ({ question, value, onChange }) => {
         </div>
       )}
 
-      {question.type === "number" && (
+      {question.type === "level" && (
         <input
           type="number"
+          min={1}
+          max={10}
           value={value || ""}
-          onChange={(e) => onChange(question.id, e.target.value)}
+          onChange={(e) => {
+            const val = parseInt(e.target.value, 10);
+            if ((val >= 1 && val <= 10) || e.target.value === "") {
+              onChange(question.id, e.target.value === "" ? "" : val);
+            }
+          }}
+          placeholder="Enter a number from 1 to 10"
           style={{
             width: "100%",
             padding: "10px",
@@ -74,11 +82,18 @@ const SurveyQuestion = ({ question, value, onChange }) => {
         />
       )}
 
-      {question.type === "text" && (
+      {question.type === "time" && (
         <input
-          type="text"
+          type="number"
+          min={1}
           value={value || ""}
-          onChange={(e) => onChange(question.id, e.target.value)}
+          onChange={(e) => {
+            const val = parseInt(e.target.value, 10);
+            if ((val >= 1) || e.target.value === "") {
+              onChange(question.id, e.target.value === "" ? "" : val);
+            }
+          }}
+          placeholder="Enter time in minutes"
           style={{
             width: "100%",
             padding: "10px",
@@ -88,12 +103,65 @@ const SurveyQuestion = ({ question, value, onChange }) => {
             fontSize: "15px",
           }}
         />
+      )}
+
+      {question.type === "where" && (
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          <select
+            value={
+              ["school", "company", "home", "outside"].includes(value) ? value : "other"
+            }
+            onChange={(e) => {
+              const selected = e.target.value;
+              if (selected === "other") {
+                onChange(question.id, "");
+              } else {
+                onChange(question.id, selected);
+              }
+            }}
+            style={{
+              width: "100%",
+              padding: "10px",
+              borderRadius: "10px",
+              border: "1px solid #ccc",
+              outline: "none",
+              fontSize: "15px",
+            }}
+          >
+            <option value="">Select location</option>
+            <option value="school">School</option>
+            <option value="company">Company</option>
+            <option value="home">Home</option>
+            <option value="outside">Outside</option>
+            <option value="other">Other</option>
+          </select>
+
+          {}
+          {(
+            ["school", "company", "home", "outside"].includes(value) === false
+          ) && (
+            <input
+              type="text"
+              placeholder="Enter your location"
+              value={value}
+              onChange={(e) => onChange(question.id, e.target.value)}
+              style={{
+                width: "100%",
+                padding: "10px",
+                borderRadius: "10px",
+                border: "1px solid #ccc",
+                outline: "none",
+                fontSize: "15px",
+              }}
+            />
+          )}
+        </div>
       )}
 
       {question.type === "choice" && (
         <textarea
           rows="3"
-          placeholder="Nhập cảm xúc của bạn..."
+          placeholder="Enter your emotions..."
           value={value || ""}
           onChange={(e) => onChange(question.id, e.target.value)}
           style={{

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import Swal from "sweetalert2";
 
 const TaskCard = ({ task, onStart, onComplete }) => {
@@ -9,20 +9,20 @@ const TaskCard = ({ task, onStart, onComplete }) => {
 
   const handleStart = () => {
     Swal.fire({
-      title: "Bắt đầu nhiệm vụ?",
-      text: `Bạn sắp bắt đầu: "${task.title}" (${task.duration} phút)`,
+      title: "Start this task?",
+      text: `You are about to start: "${task.title}" (${task.duration} minutes)`,
       icon: "question",
       showCancelButton: true,
-      confirmButtonText: "Bắt đầu ngay 💪",
-      cancelButtonText: "Để sau",
+      confirmButtonText: "Start now 💪",
+      cancelButtonText: "Maybe later",
     }).then((result) => {
       if (result.isConfirmed) {
         setStarted(true);
         onStart(task);
 
         Swal.fire({
-          title: "Đang thực hiện...",
-          text: "Chúc bạn hoàn thành thật tốt nhé!",
+          title: "In progress...",
+          text: "Good luck completing the task!",
           icon: "info",
           timer: 1500,
           showConfirmButton: false,
@@ -36,8 +36,8 @@ const TaskCard = ({ task, onStart, onComplete }) => {
               onComplete && onComplete(task.id);
               Swal.fire({
                 icon: "success",
-                title: "Hoàn thành nhiệm vụ ✅",
-                text: `"${task.title}" đã hoàn tất!`,
+                title: "Task completed ✅",
+                text: `"${task.title}" is done!`,
                 timer: 2000,
                 showConfirmButton: false,
               });
@@ -52,12 +52,12 @@ const TaskCard = ({ task, onStart, onComplete }) => {
 
   const handleEndEarly = () => {
     Swal.fire({
-      title: "Kết thúc sớm?",
-      text: "Bạn có chắc muốn dừng nhiệm vụ này không?",
+      title: "End early?",
+      text: "Are you sure you want to stop this task?",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Có, kết thúc luôn 😅",
-      cancelButtonText: "Tiếp tục làm",
+      confirmButtonText: "Yes, end it 😅",
+      cancelButtonText: "Keep going",
     }).then((result) => {
       if (result.isConfirmed) {
         clearInterval(timerRef.current);
@@ -66,8 +66,8 @@ const TaskCard = ({ task, onStart, onComplete }) => {
         setTimeLeft(0);
         Swal.fire({
           icon: "info",
-          title: "Đã kết thúc sớm",
-          text: `"${task.title}" đã được đánh dấu hoàn thành.`,
+          title: "Ended early",
+          text: `"${task.title}" has been marked as completed.`,
           timer: 1500,
           showConfirmButton: false,
         });
@@ -76,9 +76,9 @@ const TaskCard = ({ task, onStart, onComplete }) => {
   };
 
   const formatTime = (seconds) => {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+    const minutes = Math.floor(seconds / 60);
+    const sec = seconds % 60;
+    return `${minutes.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
   };
 
   return (
@@ -86,13 +86,13 @@ const TaskCard = ({ task, onStart, onComplete }) => {
       <h3 style={styles.title}>{task.title}</h3>
       <p style={styles.description}>{task.description}</p>
       <p style={styles.meta}>
-        <strong>Thời gian:</strong> {task.duration} phút |{" "}
-        <strong>Loại:</strong> {task.type}
+        <strong>Duration:</strong> {task.duration} min |{" "}
+        <strong>Type:</strong> {task.type}
       </p>
 
       {!started && !completed && (
         <button style={styles.button} onClick={handleStart}>
-          Bắt đầu
+          Start
         </button>
       )}
 
@@ -102,7 +102,7 @@ const TaskCard = ({ task, onStart, onComplete }) => {
             ⏱ {formatTime(timeLeft)}
           </p>
           <button style={styles.endButton} onClick={handleEndEarly}>
-            Kết thúc sớm
+            End Early
           </button>
         </div>
       )}
@@ -113,13 +113,13 @@ const TaskCard = ({ task, onStart, onComplete }) => {
           onClick={() =>
             Swal.fire({
               icon: "success",
-              title: "Task hoàn thành 🎉",
-              text: `"${task.title}" đã được đánh dấu hoàn thành!`,
+              title: "Task Completed 🎉",
+              text: `"${task.title}" has been marked as completed!`,
               confirmButtonText: "OK",
             })
           }
         >
-          Hoàn thành
+          Completed
         </button>
       )}
     </div>

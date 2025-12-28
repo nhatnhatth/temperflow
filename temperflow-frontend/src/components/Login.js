@@ -28,10 +28,12 @@ const Login = () => {
   return (
     <div style={styles.container}>
       <div style={styles.wapper}>
-        <h2 style={styles.title}>Welcome to Temperflow</h2>
+        <h2 style={styles.title}>Welcome to Cooldown</h2>
         <GoogleLogin
+          text="signin_with"
           onSuccess={handleLoginSuccess}
           onError={handleLoginError}
+          locale="en"
         />
       </div>
     </div>

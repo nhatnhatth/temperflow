@@ -2,6 +2,9 @@ from sqlalchemy.orm import Session
 from app.models.survey_question import SurveyQuestion
 from app.models.survey_answer import SurveyAnswer
 from app.models.survey_session import SurveySession
+from app.schemas.survey_schema import SurveyAnswerWithDate
+from typing import List
+
 
 def get_all_questions(db: Session):
     print("[LOG] Lấy tất cả câu hỏi từ DB")
@@ -29,3 +32,21 @@ def save_survey(db: Session, user_id: int, answers: list):
     db.commit()
     print(f"[LOG] Tất cả câu trả lời đã được lưu cho session_id={session.id}")
     return session
+
+def get_user_answers(db: Session, user_id: str) -> List[SurveyAnswerWithDate]:
+    """
+    Lấy tất cả câu trả lời kèm ngày trả lời của một user theo user_id
+    """
+    results = (
+        db.query(
+            SurveyAnswer.question_id,
+            SurveyAnswer.answer,
+            SurveySession.created_at.label("answered_at")
+        )
+        .join(SurveySession, SurveyAnswer.session_id == SurveySession.id)
+        .filter(SurveySession.user_id == user_id)
+        .all()
+    )
+
+    # Chuyển về schema
+    return [SurveyAnswerWithDate(**r._asdict()) for r in results]

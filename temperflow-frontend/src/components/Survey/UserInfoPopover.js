@@ -1,14 +1,19 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 const UserInfoPopover = ({ user, onLogout }) => {
-  console.log(user)
   const [showInfo, setShowInfo] = useState(false);
+  const navigate = useNavigate();
 
   if (!user) return null;
 
   return (
     <div style={{ position: "absolute", top: "20px", right: "20px" }}>
       <img
-        src={user.picture || "https://lh3.googleusercontent.com/a/ACg8ocJLQy95mwScUuIxaJdsAToZ5R8EA7m0OIcE5YyLpOCkj_H9b56z=s96-c"}
+        src={
+          user.picture ||
+          "https://lh3.googleusercontent.com/a/ACg8ocJLQy95mwScUuIxaJdsAToZ5R8EA7m0OIcE5YyLpOCkj_H9b56z=s96-c"
+        }
         alt="Avatar"
         style={{
           width: "50px",
@@ -37,10 +42,30 @@ const UserInfoPopover = ({ user, onLogout }) => {
           }}
         >
           <h4 style={{ marginBottom: "10px", color: "#4FB7B3" }}>
-            👤 Thông tin người dùng
+            👤 User Information
           </h4>
-          <p><strong>Tên:</strong> {user.name}</p>
-          <p><strong>Email:</strong> {user.mail}</p>
+          <p>
+            <strong>Name:</strong> {user.name}
+          </p>
+          <p>
+            <strong>Email:</strong> {user.mail}
+          </p>
+
+          <button
+            onClick={() => navigate("/dashboard")}
+            style={{
+              marginTop: "10px",
+              width: "100%",
+              padding: "8px",
+              backgroundColor: "#4FB7B3",
+              color: "white",
+              border: "none",
+              borderRadius: "10px",
+              cursor: "pointer",
+            }}
+          >
+            Go to Dashboard
+          </button>
 
           <button
             onClick={onLogout}
@@ -55,13 +80,12 @@ const UserInfoPopover = ({ user, onLogout }) => {
               cursor: "pointer",
             }}
           >
-            Đăng xuất
+            Logout
           </button>
         </div>
       )}
     </div>
   );
 };
-
 
 export default UserInfoPopover;

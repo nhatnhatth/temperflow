@@ -11,26 +11,26 @@ genai.configure(api_key="AIzaSyAF1svbzpYBFLOsHdoS5qtMe8QwJuwKEhA")
 model = genai.GenerativeModel("gemini-2.5-flash")
 
 TASKS = [
-    {"title": "Thở sâu", "duration": 1, "description": "Hít thở sâu 1 phút", "type": "thư giãn"},
-    {"title": "Uống nước", "duration": 1, "description": "Uống một cốc nước để làm dịu cơ thể", "type": "nhận thức"},
-    {"title": "Giãn cổ vai", "duration": 2, "description": "Xoay cổ, thả lỏng vai", "type": "vận động"},
-    {"title": "Đi bộ nhẹ", "duration": 2, "description": "Đi quanh phòng để thư giãn", "type": "vận động"},
-    {"title": "Hít sâu đếm 4", "duration": 3, "description": "Hít vào 4 giây, thở ra 4 giây", "type": "thư giãn"},
-    {"title": "Nghe nhạc nhẹ", "duration": 3, "description": "Nghe nhạc êm dịu giúp ổn định cảm xúc", "type": "thư giãn"},
-    {"title": "Viết nhanh cảm xúc", "duration": 4, "description": "Ghi lại cảm xúc hiện tại", "type": "nhận thức"},
-    {"title": "Vươn người", "duration": 4, "description": "Duỗi tay chân và lưng", "type": "vận động"},
-    {"title": "Đi dạo", "duration": 5, "description": "Đi ra ngoài hít khí trời", "type": "vận động"},
-    {"title": "Ngồi thiền ngắn", "duration": 5, "description": "Ngồi yên, tập trung vào hơi thở", "type": "thư giãn"},
-    {"title": "Gọi cho bạn thân", "duration": 6, "description": "Nói chuyện với người bạn tin tưởng", "type": "xã hội"},
-    {"title": "Vẽ nguệch ngoạc", "duration": 7, "description": "Vẽ tự do không cần mục tiêu", "type": "sáng tạo"},
-    {"title": "Tập giãn cơ", "duration": 8, "description": "Giãn cơ toàn thân cơ bản", "type": "vận động"},
-    {"title": "Nghe podcast", "duration": 9, "description": "Nghe podcast tích cực hoặc thư giãn", "type": "nhận thức"},
-    {"title": "Tưới cây", "duration": 10, "description": "Chăm sóc cây xanh giúp tĩnh tâm", "type": "thư giãn"},
-    {"title": "Viết nhật ký", "duration": 11, "description": "Ghi lại những điều khiến bạn biết ơn", "type": "nhận thức"},
-    {"title": "Đọc vài trang sách", "duration": 12, "description": "Đọc sách nhẹ nhàng hoặc truyền cảm hứng", "type": "nhận thức"},
-    {"title": "Nấu món nhỏ", "duration": 15, "description": "Chuẩn bị món ăn đơn giản", "type": "sáng tạo"},
-    {"title": "Xem video hài", "duration": 18, "description": "Xem clip hài hước để cười thoải mái", "type": "thư giãn"},
-    {"title": "Tập thể dục ngắn", "duration": 20, "description": "Bài tập nhẹ giúp giải tỏa năng lượng", "type": "vận động"},
+    {"title": "Deep Breathing", "duration": 1, "description": "Take deep breaths for 1 minute", "type": "relaxation"},
+    {"title": "Drink Water", "duration": 1, "description": "Drink a glass of water to calm your body", "type": "awareness"},
+    {"title": "Neck and Shoulder Stretch", "duration": 2, "description": "Rotate your neck and relax your shoulders", "type": "movement"},
+    {"title": "Light Walk", "duration": 2, "description": "Walk around the room to relax", "type": "movement"},
+    {"title": "4-Count Breathing", "duration": 3, "description": "Inhale for 4 seconds, exhale for 4 seconds", "type": "relaxation"},
+    {"title": "Listen to Soft Music", "duration": 3, "description": "Listen to calming music to stabilize your emotions", "type": "relaxation"},
+    {"title": "Quick Emotion Writing", "duration": 4, "description": "Write down your current feelings", "type": "awareness"},
+    {"title": "Full Body Stretch", "duration": 4, "description": "Stretch your arms, legs, and back", "type": "movement"},
+    {"title": "Take a Walk Outside", "duration": 5, "description": "Go outside and breathe fresh air", "type": "movement"},
+    {"title": "Short Meditation", "duration": 5, "description": "Sit quietly and focus on your breathing", "type": "relaxation"},
+    {"title": "Call a Close Friend", "duration": 6, "description": "Talk to someone you trust", "type": "social"},
+    {"title": "Doodle Freely", "duration": 7, "description": "Draw freely without any goal", "type": "creativity"},
+    {"title": "Muscle Stretching", "duration": 8, "description": "Basic full-body muscle stretching", "type": "movement"},
+    {"title": "Listen to a Podcast", "duration": 9, "description": "Listen to a positive or relaxing podcast", "type": "awareness"},
+    {"title": "Water the Plants", "duration": 10, "description": "Take care of plants to calm your mind", "type": "relaxation"},
+    {"title": "Write a Journal", "duration": 11, "description": "Write down things you are grateful for", "type": "awareness"},
+    {"title": "Read a Few Pages", "duration": 12, "description": "Read something light or inspiring", "type": "awareness"},
+    {"title": "Cook a Simple Dish", "duration": 15, "description": "Prepare a simple meal", "type": "creativity"},
+    {"title": "Watch Funny Videos", "duration": 18, "description": "Watch humorous clips to laugh freely", "type": "relaxation"},
+    {"title": "Short Exercise Session", "duration": 20, "description": "Light exercise to release energy", "type": "movement"},
 ]
 
 def recommend_tasks(data: RecommendationInput):
@@ -52,13 +52,14 @@ def recommend_tasks(data: RecommendationInput):
     if not selected and TASKS:
         smallest = min(TASKS, key=lambda t: t["duration"])
         selected.append(smallest)
-    print(data)
+
     # --- PROMPT GỬI GEMINI ---
     selected_titles = ", ".join([t["title"] for t in selected])
     prompt = f"""
-    Người dùng có mức độ tức giận là  {data.anger_level} , {data.free_time} phút rảnh, tôi đang ở {data.location}  và cảm thấy: {data.emotions} .
-    Các hoạt động đã gợi ý: {selected_titles}.
-    Viết 1–2 câu lời khuyên để giúp họ cải thiện tinh thần.
+    The user has an anger level of {data.anger_level}, {data.free_time} minutes of free time,
+    is currently at {data.location}, and feels: {data.emotions}.
+    The suggested activities are: {selected_titles}.
+    Write 1–2 sentences of advice to help improve their mental well-being.
     """
 
     try:
@@ -66,17 +67,21 @@ def recommend_tasks(data: RecommendationInput):
         extra_advice = ai_response.text
     except Exception as e:
         logger.error("Gemini API Error: %s", e)
-        extra_advice = "Hãy dành một chút thời gian để lắng nghe cơ thể và thư giãn nhẹ nhàng."
+        extra_advice = "Take a moment to listen to your body and gently relax."
 
-    result = [RecommendationTask(**t) for t in selected]
-
-    result.append(
-        RecommendationTask(
-            title="Lời khuyên thêm từ trợ lý Gemimi",
-            duration=0,
-            description=extra_advice,
-            type="Trợ lý",
-        )
+    # 1. Tạo task của Assistant trước
+    assistant_task = RecommendationTask(
+        id=999, # Nếu model của bạn cần ID, hãy thêm vào
+        title="Additional Advice from Gemini Assistant",
+        duration=0,
+        description=extra_advice,
+        type="Assistant",
     )
+
+    # 2. Tạo danh sách các task được chọn từ TASKS
+    other_tasks = [RecommendationTask(**t) for t in selected]
+
+    # 3. Gộp Assistant vào ĐẦU danh sách
+    result = [assistant_task] + other_tasks
 
     return result

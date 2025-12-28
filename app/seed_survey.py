@@ -9,10 +9,10 @@ db = SessionLocal()
 
 # Danh sách câu hỏi mẫu
 questions = [
-    {"question_text": "Mức độ tức giận hiện tại của bạn (1–10)", "type": "number"},
-    {"question_text": "Bạn có bao nhiêu phút sẵn sàng để làm dịu cơn giận?", "type": "number"},
-    {"question_text": "Bạn đang ở địa điểm nào?", "type": "text"},
-    {"question_text": "Chọn những cảm xúc bạn đang có (ví dụ: vui, buồn, lo lắng, bình tĩnh)", "type": "choice"},
+    {"question_text": "What is your current anger level (1–10)?", "type": "level"},
+    {"question_text": "How many minutes are you willing to spend to calm down?", "type": "time"},
+    {"question_text": "Where are you currently located?", "type": "where"},
+    {"question_text": "Select the emotions you are currently feeling (e.g., happy, sad, anxious, calm)","type": "choice" },
 ]
 
 # Chèn vào DB
