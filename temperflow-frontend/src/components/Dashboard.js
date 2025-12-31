@@ -43,10 +43,22 @@ const cardStyles = {
 const dashboardStyle = {
   minHeight: "100vh",
   padding: "40px",
-  backgroundImage: "url('https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/hinh-nen-may-tinh-chill/2905_hinh-nen-may-tinh-sieu-chill-sac-net-4K.jpg')",
+  backgroundImage:
+    "url('https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/hinh-nen-may-tinh-chill/2905_hinh-nen-may-tinh-sieu-chill-sac-net-4K.jpg')",
   backgroundSize: "cover",
   backgroundPosition: "center",
   backgroundRepeat: "no-repeat",
+};
+
+const backButtonStyle = {
+  backgroundColor: "#4FB7B3",
+  color: "#fff",
+  border: "none",
+  padding: "10px 20px",
+  borderRadius: "20px",
+  cursor: "pointer",
+  fontSize: "14px",
+  marginBottom: "20px",
 };
 
 const Dashboard = ({ userId }) => {
@@ -60,15 +72,25 @@ const Dashboard = ({ userId }) => {
   }, []);
 
   useEffect(() => {
+    if (!user) return;
+
     const fetchSurveyAnswers = async () => {
       try {
-        const res = await axios.get(`http://127.0.0.1:8000/survey/user/${user.id}/answers`);
-        const answers = res.data;
+        const res = await axios.get(
+          `http://127.0.0.1:8000/survey/user/${user.id}/answers`
+        );
 
+        const answers = res.data;
         const sessionsMap = {};
+
         answers.forEach((a, index) => {
           const sessionId = a.answered_at || index;
-          if (!sessionsMap[sessionId]) sessionsMap[sessionId] = { answered_at: a.answered_at, answers: [] };
+          if (!sessionsMap[sessionId]) {
+            sessionsMap[sessionId] = {
+              answered_at: a.answered_at,
+              answers: [],
+            };
+          }
           sessionsMap[sessionId].answers.push(a);
         });
 
@@ -92,7 +114,25 @@ const Dashboard = ({ userId }) => {
 
   return (
     <div style={dashboardStyle}>
-      <h1 style={{ fontSize: "28px", fontWeight: "700", marginBottom: "30px", color: "#fff", textShadow: "1px 1px 2px rgba(0,0,0,0.6)" }}>
+      {/* 🔙 BACK BUTTON */}
+      <button
+        style={backButtonStyle}
+        onClick={() => window.history.back()}
+        onMouseOver={(e) => (e.target.style.opacity = "0.8")}
+        onMouseOut={(e) => (e.target.style.opacity = "1")}
+      >
+        ← Back
+      </button>
+
+      <h1
+        style={{
+          fontSize: "28px",
+          fontWeight: "700",
+          marginBottom: "30px",
+          color: "#fff",
+          textShadow: "1px 1px 2px rgba(0,0,0,0.6)",
+        }}
+      >
         Dashboard - User {userId}
       </h1>
 
@@ -104,11 +144,16 @@ const Dashboard = ({ userId }) => {
 
           {session.answers.map((a, i) => {
             const q = questions.find((q) => q.id === a.question_id);
-            const answerDisplay = typeof a.answer === "object" ? JSON.stringify(a.answer) : a.answer;
+            const answerDisplay =
+              typeof a.answer === "object"
+                ? JSON.stringify(a.answer)
+                : a.answer;
 
             return (
               <div key={i} style={cardStyles.itemCard}>
-                <div style={cardStyles.questionText}>{q ? q.question_text : `Question ${a.question_id}`}</div>
+                <div style={cardStyles.questionText}>
+                  {q ? q.question_text : `Question ${a.question_id}`}
+                </div>
                 <div style={cardStyles.answerText}>{answerDisplay}</div>
               </div>
             );
