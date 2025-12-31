@@ -9,11 +9,15 @@ const Survey = () => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
 
+  // Load user from localStorage
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (storedUser) setUser(JSON.parse(storedUser));
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
   }, []);
 
+  // Fetch survey questions
   useEffect(() => {
     fetch("http://127.0.0.1:8000/survey/questions")
       .then((res) => res.json())
@@ -28,7 +32,10 @@ const Survey = () => {
   }, []);
 
   const handleChange = (questionId, value) => {
-    setAnswers((prev) => ({ ...prev, [questionId]: value }));
+    setAnswers((prev) => ({
+      ...prev,
+      [questionId]: value,
+    }));
   };
 
   const handleSubmit = () => {
@@ -41,9 +48,11 @@ const Survey = () => {
       return;
     }
 
+    // Check unanswered questions
     const unanswered = questions.filter(
-      (q) => !answers[q.id] && answers[q.id] !== 0
+      (q) => answers[q.id] === undefined || answers[q.id] === null
     );
+
     if (unanswered.length > 0) {
       Swal.fire({
         icon: "warning",
@@ -54,8 +63,8 @@ const Survey = () => {
       return;
     }
 
+    // ✅ BODY CHỈ CÓ ANSWERS
     const payload = {
-      userId: user.id,
       answers: Object.entries(answers).map(([question_id, answer]) => ({
         question_id: Number(question_id),
         answer: String(answer),
@@ -64,11 +73,19 @@ const Survey = () => {
 
     console.log("Submitting survey payload:", payload);
 
-    fetch("http://127.0.0.1:8000/survey/answers", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    })
+    // ✅ user_id GỬI QUA QUERY PARAM
+    fetch(
+      `http://127.0.0.1:8000/survey/answers?user_id=${encodeURIComponent(
+        user.id
+      )}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    )
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
@@ -95,7 +112,9 @@ const Survey = () => {
       });
   };
 
-  if (loading) return <p>Loading survey...</p>;
+  if (loading) {
+    return <p>Loading survey...</p>;
+  }
 
   return (
     <div
@@ -152,8 +171,12 @@ const Survey = () => {
             cursor: "pointer",
             transition: "0.3s",
           }}
-          onMouseOver={(e) => (e.target.style.backgroundColor = "#637AB9")}
-          onMouseOut={(e) => (e.target.style.backgroundColor = "#4FB7B3")}
+          onMouseOver={(e) =>
+            (e.target.style.backgroundColor = "#637AB9")
+          }
+          onMouseOut={(e) =>
+            (e.target.style.backgroundColor = "#4FB7B3")
+          }
         >
           Submit feedback 💬
         </button>

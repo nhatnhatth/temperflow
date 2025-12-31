@@ -52,11 +52,17 @@ const dashboardStyle = {
 const Dashboard = ({ userId }) => {
   const [surveyData, setSurveyData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) setUser(JSON.parse(storedUser));
+  }, []);
 
   useEffect(() => {
     const fetchSurveyAnswers = async () => {
       try {
-        const res = await axios.get(`http://127.0.0.1:8000/survey/user/1/answers`);
+        const res = await axios.get(`http://127.0.0.1:8000/survey/user/${user.id}/answers`);
         const answers = res.data;
 
         const sessionsMap = {};
@@ -79,7 +85,7 @@ const Dashboard = ({ userId }) => {
     };
 
     fetchSurveyAnswers();
-  }, [userId]);
+  }, [user]);
 
   if (loading) return <div>Loading...</div>;
   if (surveyData.length === 0) return <div>No survey data found.</div>;

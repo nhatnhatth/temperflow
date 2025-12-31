@@ -12,7 +12,7 @@ def get_all_questions(db: Session):
     print(f"[LOG] Số câu hỏi: {len(questions)}")
     return questions
 
-def save_survey(db: Session, user_id: int, answers: list):
+def save_survey(db: Session, user_id: str, answers: list):
     print(f"[LOG] Bắt đầu lưu khảo sát cho user_id={user_id}")
     session = SurveySession(user_id=user_id)
     db.add(session)

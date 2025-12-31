@@ -3,61 +3,42 @@ import UserInfoPopover from "./Survey/UserInfoPopover";
 
 const MOTIVATIONS = [
   {
-    text: "Awesome! You have completed your tasks and feel much calmer. Keep taking deep breaths when stress arises.",
-    gif: "https://media.giphy.com/media/111ebonMs90YLu/giphy.gif",
+    text: "You’ve completed all your tasks. Take a moment to breathe slowly and enjoy the calm you created.",
+    image: "https://images.pexels.com/photos/1051838/pexels-photo-1051838.jpeg",
   },
   {
-    text: "Bravo! All tasks are done, and your emotions are more balanced. Remember to take a few minutes each day to walk or relax.",
-    gif: "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif",
+    text: "Well done. Your focus and patience paid off. Let this quiet moment restore your energy.",
+    image: "https://images.pexels.com/photos/3822622/pexels-photo-3822622.jpeg",
   },
   {
-    text: "You are so diligent! Tasks completed and anger reduced. Try journaling each night to maintain your calm.",
-    gif: "https://media.giphy.com/media/xT0xeJpnrWC4XWblEk/giphy.gif",
+    text: "Tasks completed. Your mind is clearer now. Stay present and grounded in this moment.",
+    image: "https://images.pexels.com/photos/1557238/pexels-photo-1557238.jpeg",
   },
   {
-    text: "Congratulations! You managed your emotions well today. Listen to soft music or do a short meditation to stay relaxed.",
-    gif: "https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif",
+    text: "You handled today with composure. A calm mind is your greatest strength.",
+    image: "https://images.pexels.com/photos/2908175/pexels-photo-2908175.jpeg",
   },
   {
-    text: "All tasks completed, and you feel more relaxed. Treat yourself to a cup of tea or a small favorite pastime.",
-    gif: "https://media.giphy.com/media/3ohhwF34cGDoFFhRfy/giphy.gif",
-  },
-  {
-    text: "Excellent! You just finished everything and reduced stress effectively. Keep practicing slow breathing to handle pressure.",
-    gif: "https://media.giphy.com/media/l4pTfx2qLszoacZRS/giphy.gif",
-  },
-  {
-    text: "Bravo! Your emotions are stable after completing your tasks. Try some light stretching to maintain positive energy.",
-    gif: "https://media.giphy.com/media/l0Exk8EUzSLsrErEQ/giphy.gif",
-  },
-  {
-    text: "You are amazing! Tasks completed, anger reduced. Take 5 minutes to close your eyes and relax before moving on.",
-    gif: "https://media.giphy.com/media/3orieZkzVG27WRu5EA/giphy.gif",
-  },
-  {
-    text: "Congratulations! You controlled your anger and finished all tasks. Make it a habit to remind yourself when emotions flare.",
-    gif: "https://media.giphy.com/media/xT9IgG50Fb7Mi0prBC/giphy.gif",
-  },
-  {
-    text: "Awesome! You finished your tasks and your mood is more stable. Keep this habit to wake up with positive energy tomorrow.",
-    gif: "https://media.giphy.com/media/3o6ZsVJh3z4pS0CZ3i/giphy.gif",
+    text: "Everything is done. Let the silence recharge you before the next step.",
+    image: "https://images.pexels.com/photos/34950/pexels-photo.jpg",
   },
 ];
 
 const Motivation = ({ user }) => {
   const [motivation, setMotivation] = useState(MOTIVATIONS[0]);
+  const [localUser, setLocalUser] = useState(user || null);
 
   useEffect(() => {
     const randomIndex = Math.floor(Math.random() * MOTIVATIONS.length);
     setMotivation(MOTIVATIONS[randomIndex]);
   }, []);
 
-  const [localUser, setLocalUser] = useState(user || null);
-
   useEffect(() => {
     if (!user) {
       const stored = localStorage.getItem("user");
-      if (stored) setLocalUser(JSON.parse(stored));
+      if (stored) {
+        setLocalUser(JSON.parse(stored));
+      }
     }
   }, [user]);
 
@@ -68,31 +49,62 @@ const Motivation = ({ user }) => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        background: "linear-gradient(135deg, #A8FBD3, #637AB9)",
-        backgroundImage:
-          "url(https://images.pexels.com/photos/1323550/pexels-photo-1323550.jpeg)",
+        background: `
+          linear-gradient(
+            rgba(0,0,0,0.45),
+            rgba(0,0,0,0.45)
+          ),
+          url(https://images.pexels.com/photos/1323550/pexels-photo-1323550.jpeg)
+        `,
         backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
-        textAlign: "center",
+        backgroundPosition: "center",
       }}
     >
       <div
         style={{
-          backgroundColor: "white",
-          borderRadius: "20px",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-          padding: "40px",
-          maxWidth: "600px",
+          backgroundColor: "rgba(255,255,255,0.96)",
+          borderRadius: "22px",
+          boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
+          padding: "42px",
+          maxWidth: "640px",
+          width: "90%",
+          textAlign: "center",
         }}
       >
-        <h2 style={{ color: "#4FB7B3", marginBottom: "20px" }}>🎉 Congratulations!</h2>
-        <p style={{ fontSize: "18px", marginBottom: "20px" }}>{motivation.text}</p>
+        <h2
+          style={{
+            color: "#2F6F6D",
+            marginBottom: "18px",
+            fontWeight: 600,
+            letterSpacing: "0.5px",
+          }}
+        >
+          Session Complete
+        </h2>
+
+        <p
+          style={{
+            fontSize: "17px",
+            lineHeight: "1.7",
+            color: "#444",
+            marginBottom: "26px",
+          }}
+        >
+          {motivation.text}
+        </p>
+
         <img
-          src={motivation.gif}
-          alt="Motivation gif"
-          style={{ width: "100%", borderRadius: "12px" }}
+          src={motivation.image}
+          alt="Calm moment"
+          style={{
+            width: "100%",
+            borderRadius: "16px",
+            marginTop: "10px",
+            filter: "brightness(0.95) contrast(1.05)",
+          }}
         />
       </div>
+
       <UserInfoPopover
         user={localUser}
         onLogout={() => {

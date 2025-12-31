@@ -10,6 +10,7 @@ const Login = () => {
     })
       .then((res) => res.json())
       .then((data) => {
+        console.log(data)
         localStorage.setItem("user", JSON.stringify(data));
         localStorage.setItem("token", credentialResponse.credential);
 
@@ -22,8 +23,10 @@ const Login = () => {
     alert("Login failed. Try again.");
   };
 
-  if(localStorage.getItem("token"))
-    handleLoginSuccess(localStorage.getItem("token"))
+  if(localStorage.getItem("token")) {
+    window.location.href = "/survey";
+  }
+    
 
   return (
     <div style={styles.container}>
