@@ -12,7 +12,6 @@ questions = [
     {"question_text": "What is your current anger level (1–10)?", "type": "level"},
     {"question_text": "How many minutes are you willing to spend to calm down?", "type": "time"},
     {"question_text": "Where are you currently located?", "type": "where"},
-    {"question_text": "Select the emotions you are currently feeling (e.g., happy, sad, anxious, calm)","type": "choice" },
 ]
 
 # Chèn vào DB
